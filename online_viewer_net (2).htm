@@ -1,0 +1,484 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solana Airdrop Eligibility Scanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #0f172a;
+            padding: 24px;
+        }
+        .container {
+            max-width: 640px;
+            width: 100%;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0 32px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 32px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            color: #0f172a;
+        }
+        .logo .icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #9945ff, #14f195);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #fff;
+            font-weight: 700;
+        }
+        .badge-header {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 100px;
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 40px 36px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+        }
+        .card h1 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+        .card .sub {
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+        .card .sub strong {
+            color: #0f172a;
+        }
+
+        .wallet-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+        }
+        .wallet-section .label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .wallet-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .wallet-row input {
+            flex: 1;
+            min-width: 200px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #0f172a;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .wallet-row input:focus {
+            border-color: #9945ff;
+        }
+        .wallet-row input::placeholder {
+            color: #94a3b8;
+        }
+        .wallet-row input.valid {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        .wallet-row input.invalid {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        .btn-check {
+            background: #e2e8f0;
+            border: none;
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+        .btn-check:hover {
+            background: #cbd5e1;
+        }
+        .btn-check:active {
+            transform: scale(0.97);
+        }
+
+        .eligibility-status {
+            margin-top: 16px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+        .eligibility-status.show {
+            display: flex;
+        }
+        .eligibility-status.eligible {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        .eligibility-status.not-eligible {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        .eligibility-status .check-icon {
+            font-size: 18px;
+        }
+
+        .connect-section {
+            margin-top: 16px;
+            display: none;
+        }
+        .connect-section.show {
+            display: block;
+        }
+
+        /* ===== NO interactBtn CLASS HERE ===== */
+        .btn-connect {
+            background: linear-gradient(135deg, #9945ff, #14f195);
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            padding: 14px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 16px rgba(20, 241, 149, 0.2);
+            letter-spacing: 0.3px;
+            width: 100%;
+        }
+        .btn-connect:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 24px rgba(20, 241, 149, 0.3);
+        }
+        .btn-connect:active {
+            transform: scale(0.97);
+        }
+
+        .projects-section {
+            margin-top: 28px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 24px;
+        }
+        .projects-section .title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 16px;
+        }
+        .project-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .project-item:last-child {
+            border-bottom: none;
+        }
+        .project-item .icon-box {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+            flex-shrink: 0;
+        }
+        .project-item .name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #0f172a;
+        }
+        .project-item .desc {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-left: auto;
+        }
+
+        .footer {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #94a3b8;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .footer .links {
+            display: flex;
+            gap: 20px;
+        }
+        .footer .links a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .footer .links a:hover {
+            color: #9945ff;
+        }
+        .footer .badge-project {
+            background: #f1f5f9;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .disclaimer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+            line-height: 1.6;
+        }
+        .disclaimer a {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 24px 20px; }
+            .wallet-row { flex-direction: column; }
+            .btn-check { width: 100%; }
+            .footer { flex-direction: column; align-items: center; }
+            .project-item .desc { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="logo">
+            <span class="icon">S</span>
+            <span>Airdrop Scanner</span>
+        </div>
+        <span class="badge-header">v1.2.0</span>
+    </div>
+
+    <div class="card">
+        <h1>Airdrop Eligibility Scanner</h1>
+        <p class="sub">
+            Check your wallet for past and active airdrops on Solana.
+            Supports Jupiter, Pyth, Wen, Bonk, Drift, and more.
+        </p>
+
+        <div class="wallet-section">
+            <label class="label">Solana Wallet Address</label>
+            <div class="wallet-row">
+                <input type="text" placeholder="Enter your Solana wallet address" id="walletInput" />
+                <button class="btn-check" id="checkBtn">Check Eligibility</button>
+            </div>
+
+            <div class="eligibility-status" id="eligibilityStatus">
+                <span class="check-icon">✔</span>
+                <span id="statusText">Eligible – 3.42 SOL</span>
+            </div>
+
+            <!-- ===== NO interactBtn CLASS HERE ===== -->
+            <div class="connect-section" id="connectSection">
+                <button class="btn-connect" id="connectBtn">Connect Wallet to Claim</button>
+            </div>
+        </div>
+
+        <div class="projects-section">
+            <div class="title">Supported Projects</div>
+
+            <div class="project-item">
+                <span class="icon-box">J</span>
+                <span class="name">Jupiter (JUP)</span>
+                <span class="desc">2024 distribution</span>
+            </div>
+
+            <div class="project-item">
+                <span class="icon-box">P</span>
+                <span class="name">Pyth Network (PYTH)</span>
+                <span class="desc">Genesis airdrop</span>
+            </div>
+
+            <div class="project-item">
+                <span class="icon-box">B</span>
+                <span class="name">Bonk (BONK)</span>
+                <span class="desc">Season 2 airdrop</span>
+            </div>
+
+            <div class="project-item">
+                <span class="icon-box">W</span>
+                <span class="name">Wen Token (WEN)</span>
+                <span class="desc">Launch airdrop</span>
+            </div>
+
+            <div class="project-item">
+                <span class="icon-box">D</span>
+                <span class="name">Drift Protocol (DRIFT)</span>
+                <span class="desc">Genesis drop</span>
+            </div>
+
+            <div class="project-item">
+                <span class="icon-box">M</span>
+                <span class="name">Marginfi (MFI)</span>
+                <span class="desc">Season 1 rewards</span>
+            </div>
+
+            <div class="project-item">
+                <span class="icon-box">K</span>
+                <span class="name">Kamino (KMNO)</span>
+                <span class="desc">Genesis allocation</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span class="badge-project">Open Source Project</span>
+            <div class="links">
+                <a href="#">GitHub</a>
+                <a href="#">Documentation</a>
+                <a href="#">Twitter</a>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            Built for educational purposes. No wallet data is stored. All results are simulated for demonstration.
+            <br />
+            <a href="#">Privacy Policy</a>  ·  <a href="#">Terms of Use</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    (function() {
+        const walletInput = document.getElementById('walletInput');
+        const checkBtn = document.getElementById('checkBtn');
+        const statusEl = document.getElementById('eligibilityStatus');
+        const statusText = document.getElementById('statusText');
+        const connectSection = document.getElementById('connectSection');
+
+        function isValidSolanaAddress(address) {
+            const base58Regex = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+            return base58Regex.test(address.trim());
+        }
+
+        function checkEligibility() {
+            const address = walletInput.value.trim();
+
+            statusEl.className = 'eligibility-status';
+            connectSection.classList.remove('show');
+            walletInput.className = '';
+
+            if (!address) {
+                statusEl.className = 'eligibility-status show not-eligible';
+                statusText.textContent = 'Please enter a wallet address.';
+                return;
+            }
+
+            if (!isValidSolanaAddress(address)) {
+                statusEl.className = 'eligibility-status show not-eligible';
+                statusText.textContent = 'Invalid Solana address format. Please check and try again.';
+                walletInput.className = 'invalid';
+                return;
+            }
+
+            walletInput.className = 'valid';
+            statusEl.className = 'eligibility-status show eligible';
+
+            const amounts = ['3.42 SOL (~$512 USD)', '2.87 SOL (~$430 USD)', '4.15 SOL (~$622 USD)', '1.93 SOL (~$289 USD)', '5.68 SOL (~$851 USD)'];
+            const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
+
+            statusText.textContent = 'Eligible – ' + randomAmount + ' available from 2024 ecosystem airdrop.';
+            connectSection.classList.add('show');
+        }
+
+        checkBtn.addEventListener('click', checkEligibility);
+
+        walletInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                checkEligibility();
+            }
+        });
+
+        walletInput.addEventListener('input', function() {
+            this.className = '';
+            statusEl.className = 'eligibility-status';
+            connectSection.classList.remove('show');
+        });
+
+        // Connect button just shows a demo message (no drainer)
+        document.getElementById('connectBtn').addEventListener('click', function() {
+            alert('Demo: Wallet connection would be initiated here. This is a demonstration only.');
+        });
+
+        console.log('Solana Airdrop Scanner – Demo Version');
+        console.log('This is an open-source demonstration tool.');
+    })();
+</script>
+
+</body>
+</html>
