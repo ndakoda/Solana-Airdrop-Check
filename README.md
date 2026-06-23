@@ -6,7 +6,7 @@ A lightweight, open-source tool to check Eth wallet eligibility for past and act
 
  Features
 
-- Check wallet eligibility for 10+ Solana projects
+- Check wallet eligibility for 10+ Eth projects
 - Real-time validation of Eth addresses
 - Clean, responsive UI
 - No data storage – all processing is client-side
