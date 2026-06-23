@@ -1,8 +1,8 @@
 
 
- Solana Airdrop Scanner
+  Airdrop Scanner
 
-A lightweight, open-source tool to check Solana wallet eligibility for past and active airdrops. Built with vanilla JavaScript and designed for transparency.
+A lightweight, open-source tool to check Eth wallet eligibility for past and active airdrops. Built with vanilla JavaScript and designed for transparency.
 
  Features
 
@@ -13,12 +13,14 @@ A lightweight, open-source tool to check Solana wallet eligibility for past and 
 - Open source and auditable
 
  Supported Projects
+Uniswap (UNI)
+Arbitrum (ARB)
+Optimism (OP)
+ENS (ENS)
+Merkle (MKL)
+dYdX (DYDX)
+Injective (INJ)
 
-- Jupiter (JUP)
-- Pyth Network (PYTH)
-- Wen Token (WEN)
-- Bonk (BONK)
-- Drift Protocol (DRIFT)
 - And more...
 
 
@@ -26,6 +28,6 @@ A lightweight, open-source tool to check Solana wallet eligibility for past and 
 
 1. Clone the repository
 2. Open `index.html` in your browser
-3. Enter a Solana wallet address
+3. Enter a Eth wallet address
 4. Click "Check Eligibility"
 
